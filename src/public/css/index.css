@@ -1,0 +1,56 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-image: url("https://res.cloudinary.com/dfrvbm0im/image/upload/v1690351271/lofiwall_vrww9q.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+p {
+    color: rgb(65, 19, 19)
+}
+
+div {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    background-color: #588956;
+    margin: 15px;
+    padding: 5px;
+    border: 1px solid #0b360d;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+    background-color: #588956;
+    margin: 15px;
+    padding: 5px;
+    border: 1px solid #0b360d;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+/* Targeting the h5 elements inside the div */
+div h5 {
+    margin-top: 0;
+    /* Remove top margin to reduce spacing with the previous element */
+    margin-bottom: 5px;
+    /* Add a small margin at the bottom to separate from the next element */
+}
+
+/* Targeting the p elements inside the div */
+div p {
+    margin: 0;
+    /* Remove margin from all sides to reduce spacing */
+}
