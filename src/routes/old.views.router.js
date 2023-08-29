@@ -20,7 +20,6 @@ router.get('/', (req, res) => {
 //-------------------------------PRODUCTS VIEW
 router.get('/products', async (req, res) => {
     try {
-        console.log('entra products')
         if (!req.session.user) res.status(400).send({ status: 'error', message: 'You are not logged in.' })
         const user = req.session.user
         //Optimizado, validamos la query, si no existe, le otorgamos el valor por defecto.
