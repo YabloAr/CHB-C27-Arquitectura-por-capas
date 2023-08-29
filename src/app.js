@@ -1,18 +1,14 @@
 //CODERHOUSE BACKEND 43360
 //Alumno: Mellyid Salomón
-//Test push.
-//dotenv -- CONSULTAR Y RESOLVER
-import "dotenv/config";
-
-// agregar tambien el valor secret de las sessions para el hash
 
 //DEPENDENCIAS
+import "dotenv/config";
 import express from "express"
 import __dirname from "./utils.js";
 import handlebars from "express-handlebars";
 import mongoose from "mongoose";
 import { Server } from 'socket.io'
-import MongoStore from "connect-mongo"; //for sessions
+import MongoStore from "connect-mongo"; //for storing sessions data
 import session from "express-session"; //sessions
 import passport from "passport";
 import { initPassport } from "./config/passport.config.js";
@@ -21,10 +17,10 @@ import cors from 'cors'
 //Gestores de rutas y manager de mensajes
 import ProductsRouter from "./routes/products/products.router.js";
 import CartRouter from './routes/carts/cart.router.js'
+import SessionRouter from "./routes/sessions/sessions.router.js";
 import viewsRouter from './routes/old.views.router.js'
 import messagesRouter from './routes/old.message.router.js'
 import MessageManager from "./dao/dbManagers/messagesManager.js";
-import sessionsRouter from './routes/old.sessions.router.js' //sessions
 
 //Definimos el servidor y agregamos el middleware de parseo de las request
 const PORT = 8080 //Buena practica, definir una variable con el puerto.
@@ -42,7 +38,7 @@ const connection = mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${p
     { useNewUrlParser: true, useUnifiedTopology: true }) //añadi estos dos parametros por docs de mongoose, evita futura deprecacion.
 
 
-//deberia deprecarse por las tokens? O
+//deberia deprecarse por las tokens?
 app.use(session({
     store: MongoStore.create({
         mongoUrl: `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.hiwmxr5.mongodb.net/ecommerce?retryWrites=true&w=majority`,
@@ -66,17 +62,16 @@ initPassport()
 app.use(passport.initialize())
 app.use(passport.session())
 
-
-//Routers, aqui alojamos los diferentes tipos de request (GET, POST, PUT, DELETE, etc)
-// app.use("/api/products", oldProductsRouter) //deprecado
+//Instanciamos los custom routers (clases)
 const productRouter = new ProductsRouter()
 const cartRouter = new CartRouter()
+const sessionRouter = new SessionRouter()
 
-app.use("/api/products", productRouter.getRouter()) //router de products
-app.use("/api/carts", cartRouter.getRouter()) //router de carts
-app.use('/', viewsRouter) //Definimos la ruta raiz de nuestro proyecto, y las respuestas en vistas con las handlebars.
-app.use('/api/messages', messagesRouter) //router de messages
-app.use('/api/sessions', sessionsRouter) //router de sessiones
+app.use("/api/products", productRouter.getRouter())
+app.use("/api/carts", cartRouter.getRouter())
+app.use('/api/sessions', sessionRouter.getRouter())
+app.use('/', viewsRouter)
+app.use('/api/messages', messagesRouter)
 
 
 
