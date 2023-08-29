@@ -71,7 +71,7 @@ export default class Carts {
                 return { status: 'failed', message: 'Product does not exist, check ID.' };
             }
 
-            const productIndex = thisCart.products.findIndex((p) => p.product.toString() === productId);
+            const productIndex = thisCart.products.findIndex((p) => p.product._id.toString() === productId);
 
             if (productIndex !== -1) {
                 thisCart.products.splice(productIndex, 1);
@@ -102,12 +102,13 @@ export default class Carts {
             const thisCart = await cartsModel.findById(cartId);
             if (!thisCart) { return { status: 'failed', message: 'Cart does not exist, check ID.' } }
 
-            const thisProduct = thisCart.products.find(item => item.product === productId)
+            const thisProduct = thisCart.products.find(item => item.product._id.toString() === productId)
+            console.log(thisProduct)
             if (!thisProduct) { return { status: 'failed', message: 'Product does not exist in cart, check ID.' } }
 
             thisProduct.quantity = quantity
 
-            const productIndex = thisCart.products.findIndex(item => item.product === productId)
+            const productIndex = thisCart.products.findIndex(item => item.product._id.toString() === productId)
             thisCart.products[productIndex] = thisProduct
 
             await cartsModel.findByIdAndUpdate(thisCart._id, thisCart)

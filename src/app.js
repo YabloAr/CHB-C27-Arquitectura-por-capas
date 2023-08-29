@@ -19,15 +19,12 @@ import { initPassport } from "./config/passport.config.js";
 import cors from 'cors'
 
 //Gestores de rutas y manager de mensajes
-// import oldProductsRouter from './routes/old.products.router.js'
-import productsRouter from './routes/products/products.router.js'
-import oldCartsRouter from './routes/old.cart.router.js'
-// import cartRouter from './routes/carts/cart.router.js'
+import ProductsRouter from "./routes/products/products.router.js";
+import CartRouter from './routes/carts/cart.router.js'
 import viewsRouter from './routes/old.views.router.js'
 import messagesRouter from './routes/old.message.router.js'
 import MessageManager from "./dao/dbManagers/messagesManager.js";
 import sessionsRouter from './routes/old.sessions.router.js' //sessions
-import ProductsRouter from "./routes/products/products.router.js";
 
 //Definimos el servidor y agregamos el middleware de parseo de las request
 const PORT = 8080 //Buena practica, definir una variable con el puerto.
@@ -73,9 +70,11 @@ app.use(passport.session())
 //Routers, aqui alojamos los diferentes tipos de request (GET, POST, PUT, DELETE, etc)
 // app.use("/api/products", oldProductsRouter) //deprecado
 const productRouter = new ProductsRouter()
+const cartRouter = new CartRouter()
+
 app.use("/api/products", productRouter.getRouter()) //router de products
+app.use("/api/carts", cartRouter.getRouter()) //router de carts
 app.use('/', viewsRouter) //Definimos la ruta raiz de nuestro proyecto, y las respuestas en vistas con las handlebars.
-app.use("/api/carts", oldCartsRouter) //router de carts
 app.use('/api/messages', messagesRouter) //router de messages
 app.use('/api/sessions', sessionsRouter) //router de sessiones
 

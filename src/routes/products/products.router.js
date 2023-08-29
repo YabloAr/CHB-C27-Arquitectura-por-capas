@@ -1,37 +1,12 @@
 //Este archivo, manejar los parametros de entrada y envio de middlewares, y la tarea y el proceso en si, sucede en el app.router
-import RuteoApp from '../app.router.js'
+import AppRouter from '../app.router.js'
 import ProductManager from "../../dao/dbManagers/productsManager.js"
 import productModel from '../../dao/models/products.js';
 
 const manager = new ProductManager()
 
-export default class ProductsRouter extends RuteoApp {
+export default class ProductsRouter extends AppRouter {
     init() {
-        async function isString(value) {
-            return typeof value === 'string';
-        }
-        async function isNumber(value) {
-            return typeof value === 'number';
-        }
-        async function checkProductValues(thisProduct) {
-            try {
-                //primer validacion, existencia de propiedades y tipo de dato de las mismas
-                if (await isString(thisProduct.title) === true &&
-                    await isString(thisProduct.description) === true &&
-                    await isNumber(thisProduct.price) === true &&
-                    await isString(thisProduct.thumbnail) == true &&
-                    await isString(thisProduct.category) === true &&
-                    await isNumber(thisProduct.stock) === true) {
-                    return true
-                } else {
-                    console.log("Product Router: Validacion (existencia y tipo de datos) fallida.")
-                    return false
-                }
-            } catch (error) {
-                console.log(`Product Router: checkProductValues resultado try/catch fallida, ${error.message}`)
-            }
-        }
-
         //GET PRODUCTS CON QUERY PARAMS
         this.get('/', async (req, res) => {
             try {
@@ -99,7 +74,7 @@ export default class ProductsRouter extends RuteoApp {
         this.post('/', async (req, res) => {
             try {
                 const thisProduct = req.body;
-                const isProductValid = await checkProductValues(thisProduct);
+                const isProductValid = this.checkProductValues(thisProduct);
 
                 if (isProductValid) {
                     const addStatus = await manager.saveProduct(thisProduct);
