@@ -1,3 +1,11 @@
+// DAO (Data Access Object):
+// A DAO is a design pattern that provides an abstract interface to interact with a database. It separates the database operations 
+// from the rest of the application, making your code more organized and maintainable. In your project, you might use DAOs to 
+// encapsulate database-related operations like creating, updating, deleting, and querying data.
+// Example: Imagine you have a ProductDAO that contains methods like createProduct, updateProduct, and getProductById. 
+// These methods would handle the database interactions for managing products.
+
+
 import productsModel from '../models/products.js'
 
 export default class Products {
