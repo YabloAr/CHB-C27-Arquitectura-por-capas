@@ -15,12 +15,7 @@ import { initPassport } from "./config/passport.config.js";
 import cors from 'cors'
 
 //Gestores de rutas y manager de mensajes
-import ProductsRouter from "./routes/products/products.router.js";
-import CartRouter from './routes/carts/cart.router.js'
-import SessionRouter from "./routes/sessions/sessions.router.js";
-import viewsRouter from './routes/old.views.router.js'
-import messagesRouter from './routes/old.message.router.js'
-import MessageManager from "./dao/dbManagers/messagesManager.js";
+import appRouter from "./routes/app.router.js";
 
 //Definimos el servidor y agregamos el middleware de parseo de las request
 const PORT = 8080 //Buena practica, definir una variable con el puerto.
@@ -62,21 +57,9 @@ initPassport()
 app.use(passport.initialize())
 app.use(passport.session())
 
-//Instanciamos los custom routers (clases)
-const productRouter = new ProductsRouter()
-const cartRouter = new CartRouter()
-const sessionRouter = new SessionRouter()
-
-app.use("/api/products", productRouter.getRouter())
-app.use("/api/carts", cartRouter.getRouter())
-app.use('/api/sessions', sessionRouter.getRouter())
-app.use('/', viewsRouter)
-app.use('/api/messages', messagesRouter)
-
-
+app.use("/", appRouter)
 
 //------------------COMIENZA Aplicacion chat con socket.io
-const messageManager = new MessageManager()
 
 app.use(express.static(__dirname + '/public')) //en el js pasa la magia.
 const io = new Server(httpserver) //Declaramos el servidor http dentro del server de express para socket.io
@@ -87,8 +70,8 @@ io.on('connection', socket => {
     //el socket espera algun 'message' desde el cliente (index.js), data llega como objeto, {user: x, message: x}
     socket.on('message', async data => {
         try {
-            await messageManager.saveMessage(data)
-            const allMessages = await messageManager.getAllMessages()
+            await MessageManager.saveMessage(data)
+            const allMessages = await MessageManager.getAllMessages()
             io.emit('messageLogs', allMessages) //envia al cliente la coleccion completa de mensajes desde la db
         } catch (error) { return { status: 'error', message: `app.js socket.io save or getAll messages failed. ${error.message}` } }
     })

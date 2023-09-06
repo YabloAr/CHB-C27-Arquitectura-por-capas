@@ -4,3 +4,5 @@ ignore
 .vscode
 buenasPracticas.txt
 .env 
+http-responses-yablo.js
+http-responses.txt

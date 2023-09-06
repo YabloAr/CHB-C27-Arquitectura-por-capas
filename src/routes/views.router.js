@@ -1,9 +1,6 @@
 import { Router } from "express";
-import CartManager from '../dao/dbManagers/cartsManager.js'
-import productModel from "../dao/models/products.js";
-import { authToken } from "../utils.js";
-
-const cartManager = new CartManager()
+import CartDAO from '../models/daos/carts.dao.js'
+import productsModel from "../models/schemas/products.schema.js";
 
 const router = Router()
 
@@ -20,7 +17,10 @@ router.get('/', (req, res) => {
 //-------------------------------PRODUCTS VIEW
 router.get('/products', async (req, res) => {
     try {
-        if (!req.session.user) res.status(400).send({ status: 'error', message: 'You are not logged in.' })
+        if (!req.session.user) {
+            res.render('failedlogin')
+            return
+        }
         const user = req.session.user
         //Optimizado, validamos la query, si no existe, le otorgamos el valor por defecto.
         const page = parseInt(req.query.page) || 1
@@ -37,7 +37,7 @@ router.get('/products', async (req, res) => {
             { $count: 'totalCategoryCount' },//$count siempre va a devolver la cantidad de docs, el string es libre
         ];
         //ejecuta la pipeline para obtener el resultado
-        const totalCountResult = await productModel.aggregate(countPipeline).exec();
+        const totalCountResult = await productsModel.aggregate(countPipeline).exec();
         //totalCounResult no es un array, pero length igual recibe el dato. Se usa en hasNextPage
         const totalCategoryCount = totalCountResult.length > 0 ? totalCountResult[0].totalCategoryCount : 0;
 
@@ -49,14 +49,13 @@ router.get('/products', async (req, res) => {
             { $limit: limit },
         ];
 
-        const products = await productModel.aggregate(pipeline).exec();
+        const products = await productsModel.aggregate(pipeline).exec();
         //validaciones de cantidad de paginas segun resultados anteriores
         const hasNextPage = skip + products.length < totalCategoryCount; //boolean
         const hasPrevPage = page > 1;//boolean
         const nextPage = hasNextPage ? page + 1 : null;
         const prevPage = hasPrevPage ? page - 1 : null;
 
-        //finalmente le enviamos mediante el render, los datos necesarios para los handlebars.
         res.render('products', { products, hasPrevPage, hasNextPage, prevPage, nextPage, limit, sort, category, user })
 
     } catch (error) { res.status(500).send({ status: 'error', error: error.message }); }
@@ -65,15 +64,17 @@ router.get('/products', async (req, res) => {
 //-------------------------------CARTS VIEW
 router.get('/carts', async (req, res) => {
     if (!req.session?.user) res.redirect('/login');
-    let carts = await cartManager.getAll()
-    res.render('carts', { carts }) //le enviamos mediante el render, los datos necesarios para los handlebars.
+    let response = await CartDAO.getAll()
+    let carts = response.carts
+    res.render('carts', { carts })
 })
 
 //-------------------------------CART DETAILS VIEW
 router.get('/carts/:cid', async (req, res) => {
     if (!req.session?.user) res.redirect('/login');
     const cid = req.params.cid
-    const thisCart = await cartManager.getCartById(cid)
+    const response = await CartDAO.getCartById(cid)
+    const thisCart = response.cart
 
     const products = thisCart.products.map(productData => ({
         ...productData.product.toObject(),
@@ -93,7 +94,6 @@ router.get('/chat', (req, res) => {
 
 
 //-------------------------------USER UTILITIES VIEWS
-
 //REGISTER
 router.get('/register', (req, res) => {
     res.render('register')

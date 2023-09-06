@@ -5,15 +5,33 @@
 // parts of your server.Example: Let's say you're fetching product information from your database. You could create a ProductDTO
 // that includes only the necessary fields like name, price, and description. This way, you're sending only the required data
 // between your server and frontend.
+import { generateNewCode } from '../../utils.js'
+
 
 export default class ProductsDTO {
     constructor(product) {
+        if (!this.isValidProduct(product)) {
+            throw new Error('Invalid product data.');
+        }
+
         this.title = product.title;
         this.description = product.description;
         this.category = product.category;
-        this.code = product.code;
+        this.code = generateNewCode()
         this.price = product.price;
         this.stock = product.stock;
         this.thumbnail = product.thumbnail;
+    }
+
+    isValidProduct(product) {
+        return (
+            product &&
+            typeof product.title === 'string' &&
+            typeof product.description === 'string' &&
+            typeof product.category === 'string' &&
+            typeof product.price === 'number' &&
+            typeof product.stock === 'number' &&
+            typeof product.thumbnail === 'string'
+        );
     }
 }

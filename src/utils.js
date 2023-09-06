@@ -38,6 +38,18 @@ export const authToken = (req, res, next) => {
 }
 //--------------------------TerminaJson Web Token, log 18.08
 
+//--------------------------Genera un codigo random para el productDTO
+export const generateNewCode = () => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let randomCode = '';
+    for (let i = 0; i < 7; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        randomCode += characters[randomIndex];
+    }
+    return randomCode
+}
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 

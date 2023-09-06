@@ -1,8 +1,8 @@
-import messageModel from './../models/messages.js';
+import messageModel from '../schemas/messages.schema.js';
 
-export default class Messages {
+class MessagesDAO {
     constructor() {
-        console.log('dbManager: messagesManager.js. Conectado a Mongo Atlas Db.')
+        console.log('Messages DAO connected.')
     }
 
     getAllMessages = async () => {
@@ -18,6 +18,6 @@ export default class Messages {
             return { status: 'Success.', message: 'Message added.' }
         } catch (error) { console.error('Error creating messages from db', error.message) }
     }
-
-
 }
+
+export default new MessagesDAO()
